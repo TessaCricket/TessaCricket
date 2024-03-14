@@ -1,0 +1,252 @@
+import openai
+
+#openai.api_key = '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'  # my key for GPT3
+openai.api_key = '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'  # Tessa key for GPT4
+
+class Foundation_Year_Essay_Extraction:
+
+    def __init__(self):
+        #self.model_engine = "gpt-3.5-turbo"
+        #self.model_engine = "gpt-4"
+        self.model_engine = "gpt-3.5-turbo-16k"
+
+    def extraxt_all_features(self, essay):
+        self.essay = essay
+        grammar_score = self.extract_grammar()
+        tone_score = self.academic_tone()
+        structure_score = self.extract_argument_and_structure()
+        critical_thinking_score = self.extract_critical_thinking()
+        evidence_use_score = self.extract_evidence_use()
+        quick_feedback = self.extract_quick_feedback()
+
+        answers = [grammar_score, tone_score, structure_score, critical_thinking_score, evidence_use_score, quick_feedback]
+        return answers
+
+
+    def extract_quick_feedback(self):
+        prompt = "I will show you an essay from an undergraduate student. Please give a feedback on this essay accoridng to a very specific rules. " \
+                 "The first sentence should point out the strong side of the essay. " \
+                 "Then for each of these five categories gie a single sentence describing what could be improved. The categories are: Grammar, Academic Tone, Structure of Arument, Critical Thinking, Evidence Use." \
+                 "\n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_evidence_use(self):
+        prompt = "Please tell me how good critcal analysis and critical thinking is in this essay? Please give answer in a 0-5 scale. " \
+                 "0 is lack of any evidence supporting the arguments present, " \
+                 "essay scoring 1 on this scale may make no effort to bring in any outside evidence, or do so ineffectively, or by simply repeating it with little attempt to frame it or connect to the wider essay." \
+                 "2 is an essay that is somewhere between criteria for 1 and 3, " \
+                 "essey scoring 3 answer would made reasonable reference to source materials recommended but may not use them wholly effectively." \
+                 "essay scoring 4 would be better that the criteria for scoring 3 and worse than critria for 5, " \
+                 "finally essay scoring 5 would draw effectively on the source materials recommended and bring them into answers in a way that shows an understanding of the underlying concepts and that develops the wider essay. It might also draw on other prior learning or ideas outside of the recommended reading in a way that shows a developed understanding." \
+                 "Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_critical_thinking(self):
+        prompt = "Please tell me how good critcal analysis and critical thinking is in this essay? Please give answer in a 0-5 scale. " \
+                 "0 is lack of any evidence of thinking present, " \
+                 "essay scoring 1 on this scale would show little evidence of analysis, for example being merely descriptive, and show no capacity for approaching the question asked in an analytical way." \
+                 "2 is an essay that is somewhere between criteria for 1 and 3, " \
+                 "essey scoring 3 answer would show critical analysis in places or with certain parts of the answer but not others. Comments on the topic might not be especially insightful." \
+                 "essay scoring 4 would be better that the criteria for scoring 3 and worse than critria for 5, " \
+                 "finally essay scoring  5 would demonstrate strong and consistent critical analysis skills and make insightful comments on the topic. " \
+                 "Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+
+    def extract_argument_and_structure(self):
+        prompt = "Please tell me how good structure of the argument is in this essay? Please give answer in a 0-5 scale. " \
+                 "0 is lack of any sort of structure, " \
+                 "essay scoring 1 on this scale would feature significant weakness in the structure and/or argument. It might seem rambling or confused in places and veer far from the question asked. It might be hard to follow or vague and generalised." \
+                 "2 is an essay that is somewhere between criteria for 1 and 3, " \
+                 "essey scoring 3 might have some positive features, such as an introduction or conclusion, but lose direction or focus slightly in parts. It might have some generalisations, but is broadly effective and addresses the issues under discussion." \
+                 "essay scoring 4 would be better that the criteria for scoring 3 and worse than critria for 5, " \
+                 "finally essay scoring  5 would feature a convincing structure and sustained argument which is focussed on the question throughout. It will also feature effective synthesis of the issues under discussion and more generally have some of the features of strong academic communication skills. " \
+                 "Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_grammar(self):
+        prompt = "Please tell me how good the grammar is in the essay below? Please give answer in a 0-5 scale " \
+                 "where hard to understand text is 0 on the scale, " \
+                 "no range of structures and mostly inaccurate grammar is 1 on the scale, " \
+                 "limited range of structures and frequent inaccuracies that hinder/disrupt communication corresponds to 2, " \
+                 "good range of structures and occasional inaccuracies hinder that disrupt communication is 3 on the scale, " \
+                 "wide range of structures with few inaccuracies that do not hinder/disrupt communication is 4 on the scale and " \
+                 "ideal grammar with elaborate structures is 5 on the scale. " \
+                 "Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def academic_tone(self):
+        prompt = "Please tell me how academically the essay below sounds? Please give answer in a 0-5 . " \
+                 "The hints for a good academic tone :\n\n" \
+                 "Exclude:\n\n" \
+                 "First person pronouns (e.g., I, my, me) and second person pronouns (e.g., you, your, yours) (see Chapter 5).\n" \
+                 "Contractions: as part of everyday conversational English, contractions have no place in formal academic writing. For example didn’t (did not), can’t (cannot), won’t (will not), it’s (it is – not to be confused with the pronoun its), shouldn’t (should not), and many more. Use the full words.\n" \
+                 "Poor connectives: “but”, in particular is a very poor connective. Instead, refer to the signposting examples of however, although, nevertheless, yet, though. Also the overuse of “and”; try alternatives, such as plus, in addition, along with, also, as well as, moreover, together with.\n" \
+                 "Avoid coloquial language.\n" \
+                 "Avoid hyperbole \n" \
+                 "Avoid emotional language.\n" \
+                 "Even in a persuasive text, appeal to the readers’ minds, not feelings.\n" \
+                 "Avoid being verbose\n" \
+                 "Avoid generalizing\n" \
+                 "Avoid statements such as “I think”, “I feel”, or “I believe”; they are clear indicators of personal opinion.\n" \
+                 "Do not begin a sentence with “and”, “because”, or digits – e.g., 75% of participants… Always begin a sentence with a word – Seventy-five percent.\n" \
+                 "Do not use digits 0-9 as digits; write the whole word – zero, one, two, three. Once you get to double digits you may use the number – 10, 11, 12. The only exception to this rule would be sharing data or statistics, however the previous rule still applies.\n" \
+                 "\n\nInclude:\n" \
+                 "Academic vocabulary (sometimes this is discipline specific, such as technical or medical terms).\n" \
+                 "Use tentative or low modal language when something you are writing is not definite or final. For example, could, might, or may, instead of will, definitely, or must.\n" \
+                 "Be succint\n" \
+                 "Include variance of sentence structure\n" \
+                 "Use powerful reporting verbs\n" \
+                 "Use clever connectives and conjunctions\n" \
+                 "The scale is defined as follows:\n" \
+                 "0 in adherence to less than 30% of above hints " \
+                 "1 is adherence to 30-40% of these rules, " \
+                 "2 is adherence to 40-55% of these rules, " \
+                 "3 is adherence to 55-65% of these rules, " \
+                 "4 is adherence to 65-85% of these rules, " \
+                 "5 is adherence to more than 85% of these rules. " \
+                 "Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+
+class Example_Extractor:
+
+    def __init__(self):
+        self.model_engine = "gpt-3.5-turbo"
+
+    def extraxt_all_features(self, essay):
+        self.essay = essay
+        publications = self.extract_publications()
+        degrees = self.extract_degree_list()
+        name = self.extract_candidate_name()
+        practical_lab_exp = self.extract_practical_lab_experience()
+        excitement = self.extract_excitement()
+
+        answers = [name, publications, degrees, practical_lab_exp, excitement]
+        return answers
+
+    def extract_publications(self):
+        prompt = "Please tell me how good publication record of candidate who wrote the cover letter below is? Please give answer in a 0-5 scale where no publications is 0 on the scale, 1 publication is 1 on the scale, 2-3 publications corresponds to 2, 4-5 publications is 3 on the scale, 6-8 publications is 4 on the scale and more than 8 publications is 5 on the scale. Provide the answer in x/5 form, without any additional words. \n\nThe essay is: \n\n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_degree_list(self):
+        prompt = "Use bullet points to list all degrees held by the author of this cover letter: \n \n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_candidate_name(self):
+        prompt = "What is the name of the author of this cover letter? Please give name only as an answer. The cover letter:\n \n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_practical_lab_experience(self):
+        prompt = "Please tell me how much practical laboratory experience the candidate who wrote the cover letter has? Please give answer in a 0-5 scale where no laboratory experience is 0 on the scale, taking part in one day event is 1 on the scale, helping with some project corresponds to 2, making an impact on a project is 3 on the scale, being in charge of one's own experiments is 4 on the scale and managing a research project is 5 on the scale. Provide the answer in x/5 form, without any additional words.The cover letter:\n \n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        response = response.choices[0].message.content
+        return response
+
+    def extract_excitement(self):
+        prompt = "Please tell me how excited about the position the candidate who wrote the cover letter is? Please give answer in a 0-5 scale where no signs of optimism is 0 on the scale, casual politeness is 1 on the scale, some positive remarks about the institution applied to corresponds to 2, referencing to a particular value that the applied to institution holds is 3 on the scale, expressing excitement about future colaboration is 4 on the scale and presence of all the thing mentioned in lower scores descriptions is 5 on the scale. Provide the answer in x/5 form, without any additional words. The cover letter:\n \n" + str(self.essay)
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        response = response.choices[0].message.content
+        return response
