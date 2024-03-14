@@ -1,0 +1,40 @@
+from pylatex import Document, Section, Command, Figure
+from pylatex.base_classes import Environment
+from pylatex.utils import NoEscape
+import os
+
+
+def generate_pdf(answers, output_path='output', compiler='pdflatex'):
+    # Create a new LaTeX document
+    doc = Document()
+
+    # Set title
+    doc.preamble.append(Command('title', "Cricket AI Report"))
+    doc.append(NoEscape(r'\maketitle'))
+
+    script_directory = os.path.dirname(os.path.realpath(__file__))
+    print(script_directory)
+
+    # Add Logo
+    logo_path = str(script_directory) + "/Data/Images/CricketLogo.png"
+    with doc.create(Figure(position='h!')) as logo:
+        logo.add_image(logo_path, width = 140)
+
+    with doc.create(Section("Focus And Method")):
+        doc.append(answers[0])
+
+    with doc.create(Section("Knowledge And Understanding")):
+        doc.append(answers[1])
+
+    with doc.create(Section("Critical Thinking")):
+        doc.append(answers[2])
+
+    with doc.create(Section("Engagement")):
+        doc.append(answers[3])
+
+    # Generate the PDF
+    doc.generate_pdf(output_path, clean_tex=True, compiler=compiler)
+
+if __name__ == '__main__':
+    answers = ["A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   ", "A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   ","A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   ","A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   A lot of nothing   "]
+    generate_pdf(answers, output_path='my_document', compiler='pdflatex')
