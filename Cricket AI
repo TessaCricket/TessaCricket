@@ -1,0 +1,231 @@
+import openai
+import pypdf
+import reportlab
+from reportlab.pdfgen.canvas import Canvas
+from UsefulFunctions import spliter_into_lines
+from PIL import Image
+import time
+
+#openai.api_key = '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'  # my key for GPT3
+openai.api_key = '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'  # Tessa key for GPT4
+
+
+##############################################################
+###               FEATURE EXTRACTOR                        ###
+##############################################################
+
+class Feedback_Extrator:
+
+    def __init__(self):
+        #self.model_engine = "gpt-3.5-turbo"
+        self.model_engine = "gpt-4-1106-preview"
+        #self.model_engine = "gpt-3.5-turbo-16k"
+
+    def get_Feedback(self, essay):
+        self.essay = essay
+
+        #Feedbacks
+        FocusAndMethod = self.get_FocusAndMethod()
+        time.sleep(3)
+        KnowledgeAndUnderstanding = self.get_KnowledgeAndUnderstanding()
+        time.sleep(3)
+        CriticalThinking = self.get_CriticalThinking()
+        time.sleep(3)
+        Engagement = self.get_Engagement()
+        time.sleep(3)
+
+
+        answers = [FocusAndMethod, KnowledgeAndUnderstanding, CriticalThinking, Engagement]
+        return answers
+
+
+
+    def get_FocusAndMethod(self):
+        prompt = "I will show you an essay from a undergraduate student. " \
+                 "\n\nThe essay is: \n\n" + str(self.essay) + "\n\n\n" \
+                 "Please start you feedback with finding something positive about the critical analysis of sources in the essay, but keep it to one sentence." \
+                 "Show that students show an understanding of Content by demonstrating if students have a focused approach to acquiring and applying knowledge relevant to the subject." \
+                 "They should employ appropriate methods and techniques to deepen their understanding and solve problems effectively." \
+                 "Application of Skills: Within this context, students demonstrate focused application of their skills to address challenges or complete tasks." \
+                 "They should use appropriate methods and strategies to apply their knowledge in practical contexts." \
+                 "Only give an example if it demonstrates this criteria clearly. " \
+                 "Give examples within the text of how this can be improved. " \
+
+        
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def get_KnowledgeAndUnderstanding(self):
+        prompt = "I will show you an essay from a undergraduate student. " \
+                 "\n\nThe essay is: \n\n" + str(self.essay) + "\n\n\n" \
+                 "Please start you feedback with finding something positive about the critical analysis of sources in the essay, but keep it to one sentence." \
+                 "Understanding of Content: This criterion primarily relates to the depth and breadth of students' knowledge and understanding of key concepts, theories, and principles within the subject area. " \
+                 "Students should demonstrate a comprehensive grasp of the content covered. " \
+                 "Independent Inquiry: Within this context, students utilize their knowledge and understanding to guide their independent inquiry and research. " \
+                 "They should be able to formulate meaningful questions, gather relevant information, and draw insightful conclusions based on their understanding of the subject matter. " \
+                 "Only give an example if it demonstrates this criteria clearly. " \
+                 "Give examples within the text of how this can be improved. " \
+                 
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def get_CriticalThinking(self):
+        prompt = "I will show you an essay from a undergraduate student." \
+                 "\n\nThe essay is: \n\n" + str(self.essay) + "\n\n\n" \
+                 "Please start you feedback with finding something positive about the critical analysis of sources in the essay, but keep it to one sentence." \
+                 "Critical Thinking Skills: Students should demonstrate critical thinking by engaging with information critically, evaluating evidence, and drawing well-supported conclusions." \
+                 "They should demonstrate an active and thoughtful approach to analyzing information and solving problems." \
+                 "Only give an example if it demonstrates this criteria clearly. " \
+                 "Give examples within the text of how this can be improved. " \
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+    def get_Engagement(self):
+        prompt = "I will show you an essay from a undergraduate student." \
+                 "\n\nThe essay is: \n\n" + str(self.essay) + "\n\n\n" \
+                 "Please start you feedback with finding something positive about the critical analysis of sources in the essay, but keep it to one sentence." \
+                 "Communication Skills: Within this context, critical thinking is evident in students' ability to communicate their ideas effectively, construct coherent arguments, and engage in meaningful dialogue with others." \
+                 "They should demonstrate an ability to critically evaluate different perspectives and present well-reasoned arguments." \
+                 "Only give an example if it demonstrates this criteria clearly. " \
+                 "Give examples within the text of how this can be improved. " \
+
+        response = openai.ChatCompletion.create(
+            model=self.model_engine,
+            messages=[{"role": "system", "content": prompt}],
+            max_tokens=1024,
+            temperature=0,
+        )
+        print(response)
+        print(response.choices[0].message.content)
+        response = response.choices[0].message.content
+        return response
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##############################################################
+###                    REPORT CREATOR                      ###
+##############################################################
+class Report_Creator:
+
+    def __init__(self):
+        self.pdf_writer = pypdf.PdfWriter()
+
+
+    def create_report(self, answers, path_save, canvas_hight = 3000):
+        im = Image.open(".\\Data\\Images\\CricketLogo.png")
+        canvas = Canvas(path_save, pagesize=(600, canvas_hight))
+
+        canvas.drawInlineImage(im, 40, canvas_hight - 100, 90, 90)
+
+        canvas.setFont("Times-Roman", 40)
+        canvas.drawString(150, canvas_hight - 50, "CricketAI Report")
+
+        start = canvas_hight - 150
+
+
+
+        #Feedback on Focus and Methods
+        canvas.setFont("Times-Roman", 18)
+        canvas.drawString(40, start, "Focus and Method: ")
+        canvas.setFont("Times-Roman", 12)
+        start = start - 20
+
+        feedback = str(answers[0])
+        feedback = spliter_into_lines(feedback, 100)
+
+        for line in feedback:
+            canvas.drawString(40, start, line)
+            start = start - 12
+        start = start - 20
+
+
+
+        # Feedback on Knowledge and Understanding
+        canvas.setFont("Times-Roman", 18)
+        canvas.drawString(40, start, "Knowledge and Understanding: ")
+        canvas.setFont("Times-Roman", 12)
+        start = start - 20
+
+        feedback = str(answers[1])
+        feedback = spliter_into_lines(feedback, 100)
+
+        for line in feedback:
+            canvas.drawString(40, start, line)
+            start = start - 12
+        start = start - 20
+
+
+        # Feedback on Critical Thinking
+        canvas.setFont("Times-Roman", 18)
+        canvas.drawString(40, start, "Critical Thinking: ")
+        canvas.setFont("Times-Roman", 12)
+        start = start - 20
+
+        feedback = str(answers[2])
+        feedback = spliter_into_lines(feedback, 100)
+
+        for line in feedback:
+            canvas.drawString(40, start, line)
+            start = start - 12
+        start = start - 20
+
+
+
+        # Feedback on Engagement
+        canvas.setFont("Times-Roman", 18)
+        canvas.drawString(40, start, "Engagement: ")
+        canvas.setFont("Times-Roman", 12)
+        start = start - 20
+
+        feedback = str(answers[3])
+        feedback = spliter_into_lines(feedback, 100)
+
+        for line in feedback:
+            canvas.drawString(40, start, line)
+            start = start - 12
+
+
+        print("Last line position:" + str(start))
+
+        canvas.save()
+
+        # This is to find the length of the report and recreate it and the proper length
+        return canvas_hight - start + 30
