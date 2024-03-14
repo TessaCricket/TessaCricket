@@ -1,0 +1,66 @@
+from IB_humanities import Feedback_Extrator
+from IB_humanities import Report_Creator
+from IB_humanities_Latex import *
+
+from pypdf import PdfReader
+
+import time
+
+
+# The main HUB:
+def Pilot_Report():
+    batch_size = 8
+    batch_no = 3
+
+    for n in range(batch_size):
+        print("Running no " + str(n))
+        # Read in an essay
+        path_pdf = ".\\Data\\IB_humanities\\Batch" + str(batch_no) + "\\" + str(n) + "\\essay.pdf"
+        path_save = ".\\Data\\IB_humanities\\Batch" + str(batch_no) + "\\" + str(n) + "\\report"
+
+        print("Essay Path: " + str(path_pdf))
+
+        reader = PdfReader(path_pdf)
+        print("\nThis essay has " + str(len(reader.pages)) + " pages.")
+        full_text = ""
+        num_pages = len(reader.pages)
+        for i in range(num_pages):
+            text = reader.pages[i].extract_text()
+            full_text = full_text + text
+        #print("XXX\n\n" + str(full_text) + "\n\nXXX")
+
+        #Extraction
+        extractor = Feedback_Extrator()
+        answers = extractor.get_Feedback(full_text)
+        #print(answers)
+
+        #Report Creator - canvas
+        #reporter = Report_Creator()
+        #desired_length = reporter.create_report(answers, path_save)
+        #reporter.create_report(answers, path_save, desired_length)
+
+        # Report Creator - latex
+        #answers = ["dummy", "dummy", "dummy", "dummy"]
+        try:
+            generate_pdf(answers, output_path=path_save)
+        except:
+            print("That pesky error still occurs!")
+
+        print("XXX\n\nREPORT PRINTED\n\nXXX")
+
+        time.sleep(5)
+
+if __name__ == '__main__':
+    Pilot_Report()
+
+
+
+
+
+
+
+
+
+
+
+
